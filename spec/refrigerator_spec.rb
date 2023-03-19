@@ -93,7 +93,7 @@ describe 'A refrigerator' do
       expect(refrigerator.set_freezer_level(1)).to eq(65)
     end
 
-    it "check to s" do
+    it "check to_s power off" do
 
       # Setup for remaining capacity
       expect(chiller).to receive(:remaining_capacity).and_return(100)
@@ -107,6 +107,28 @@ describe 'A refrigerator' do
       expect(water_reservoir).to receive(:current_water_volume).and_return(20)
 
       expect(refrigerator.to_s).to eq("Power: off\nStorage: 200 of 200 available\nTemps: Chiller is 70, Freezer is 70\nWater: Reservoir has 20 remaining.\n")
+
+    end
+
+    it "check to_s power on" do
+
+      # Setup for remaining capacity
+      expect(chiller).to receive(:remaining_capacity).and_return(100)
+      expect(freezer).to receive(:remaining_capacity).and_return(100)
+
+      # Set up for total capacity
+      expect(chiller).to receive(:capacity).and_return(100)
+      expect(freezer).to receive(:capacity).and_return(100)
+
+      # Set up for current_water_volume
+      expect(water_reservoir).to receive(:current_water_volume).and_return(20)
+      
+      # Set up for plug in
+      expect(chiller).to receive(:turn_on).and_return(:on)
+      expect(freezer).to receive(:turn_on).and_return(:on)
+      
+      refrigerator.plug_in
+      expect(refrigerator.to_s).to eq("Power: on\nStorage: 200 of 200 available\nTemps: Chiller is 70, Freezer is 70\nWater: Reservoir has 20 remaining.\n")
 
     end
     
