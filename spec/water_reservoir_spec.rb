@@ -14,6 +14,7 @@ describe 'A water reservoir' do
     it "respondes to capacity" do
       expect(water_reservoir).to respond_to(:capacity)
     end
+    
   end
 
   context "checking the water volume" do
@@ -35,6 +36,11 @@ describe 'A water reservoir' do
     it "drains an full reservoir" do
       expect(full_reservoir.drain(5)).to eq(5)
     end
+
+    it "cannot drain below 0" do
+      expect(full_reservoir.drain(100)).to eq(0)
+    end
+
   end
 
 end
