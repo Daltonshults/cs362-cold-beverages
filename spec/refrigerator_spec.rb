@@ -47,13 +47,13 @@ describe 'A refrigerator' do
     it "adding item to chiller" do
       item = double('item', volume: 50, name: "name")
       expect(chiller).to receive(:add).and_return(chiller.contents << item)
-      expect(refrigerator.chill(item)).to eq(chiller.contents << item)
+      expect(refrigerator.chill(item)).to eq([] << item)
     end
 
     it "adding item to chiller" do
       item = double('item', volume: 50, name: "name")
       expect(freezer).to receive(:add).and_return(freezer.contents << item)
-      expect(refrigerator.freeze(item)).to eq(freezer.contents << item)
+      expect(refrigerator.freeze(item)).to eq([] << item)
     end
 
     it "checking total capacity" do
@@ -106,7 +106,14 @@ describe 'A refrigerator' do
       # Set up for current_water_volume
       expect(water_reservoir).to receive(:current_water_volume).and_return(20)
 
-      expect(refrigerator.to_s).to eq("Power: off\nStorage: 200 of 200 available\nTemps: Chiller is 70, Freezer is 70\nWater: Reservoir has 20 remaining.\n")
+      # Set up for unplug
+      expect(chiller).to receive(:turn_off).and_return(:off)
+      expect(freezer).to receive(:turn_off).and_return(:off)
+
+      refrigerator.unplug
+
+      expect(refrigerator.to_s).to \
+      eq("Power: off\nStorage: 200 of 200 available\nTemps: Chiller is 70, Freezer is 70\nWater: Reservoir has 20 remaining.\n")
 
     end
 
@@ -128,7 +135,8 @@ describe 'A refrigerator' do
       expect(freezer).to receive(:turn_on).and_return(:on)
       
       refrigerator.plug_in
-      expect(refrigerator.to_s).to eq("Power: on\nStorage: 200 of 200 available\nTemps: Chiller is 70, Freezer is 70\nWater: Reservoir has 20 remaining.\n")
+      expect(refrigerator.to_s).to \
+      eq("Power: on\nStorage: 200 of 200 available\nTemps: Chiller is 70, Freezer is 70\nWater: Reservoir has 20 remaining.\n")
 
     end
     
