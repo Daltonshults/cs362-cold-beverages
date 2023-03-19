@@ -1,5 +1,5 @@
 require_relative '../lib/chiller'
-require_relative 'spec_helper.rb'
+require_relative './spec_helper'
 
 describe 'A chiller' do
 

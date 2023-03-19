@@ -1,11 +1,13 @@
 require_relative '../lib/refrigerator'
+require_relative '../lib/freezer'
+require_relative '../lib/chiller'
 require_relative 'spec_helper.rb'
 
 
 describe 'A refrigerator' do
   context "Checking instantiation" do
-    let(:chiller) {double('chiller', capacity: 100, temperature: 70, power: :off, contents: [])}
-    let(:freezer) {double('freezer', capacity: 100, temperature: 70, power: :off, contents: [])}
+    let(:chiller) {Chiller.new}
+    let(:freezer) {Freezer.new}
     let(:control_panel) {double('control_panel')}
     let(:water_reservoir) {double('waterreservoir', capacity: 10, initial_water_volume: 0)}
     let(:water_dispenser) {double('waterdispenser', reservoir: water_reservoir)}
@@ -36,9 +38,9 @@ describe 'A refrigerator' do
     end
   end
 
-  context "adding items" do
-    let(:chiller) {double('chiller', capacity: 100, temperature: 70, power: :off, contents: [])}
-    let(:freezer) {double('freezer', capacity: 100, temperature: 70, power: :off, contents: [])}
+  context "function tests for freezer/chiller integration" do
+    let(:chiller) {Chiller.new}
+    let(:freezer) {Freezer.new}
     let(:control_panel) {double('control_panel')}
     let(:water_reservoir) {double('waterreservoir', capacity: 10, initial_water_volume: 0)}
     let(:water_dispenser) {double('waterdispenser', reservoir: water_reservoir)}
@@ -46,13 +48,11 @@ describe 'A refrigerator' do
     
     it "adding item to chiller" do
       item = double('item', volume: 50, name: "name")
-      expect(chiller).to receive(:add).and_return(chiller.contents << item)
       expect(refrigerator.chill(item)).to eq([] << item)
     end
 
     it "adding item to chiller" do
       item = double('item', volume: 50, name: "name")
-      expect(freezer).to receive(:add).and_return(freezer.contents << item)
       expect(refrigerator.freeze(item)).to eq([] << item)
     end
 
@@ -61,54 +61,28 @@ describe 'A refrigerator' do
     end
 
     it "checking remaining capacity" do
-      expect(freezer).to receive(:remaining_capacity).and_return(100)
-      expect(chiller).to receive(:remaining_capacity).and_return(100)
-      
       expect(refrigerator.remaining_capacity).to eq(200)
     end
 
     it "checking plug in" do
-      expect(chiller).to receive(:turn_on).and_return(:on)
-      expect(freezer).to receive(:turn_on).and_return(:on)
-
       expect(refrigerator.plug_in).to eq(:on)
     end
 
     it "checking unplug" do
-      expect(chiller).to receive(:turn_off).and_return(:off)
-      expect(freezer).to receive(:turn_off).and_return(:off)
-
       expect(refrigerator.unplug).to eq(:off)
     end
 
     it "sets the chiller level" do
-      expect(chiller).to receive(:set_level).and_return(60)
-
-      expect(refrigerator.set_chiller_level(1)).to eq(60)
+      expect(refrigerator.set_chiller_level(1)).to eq(65)
     end
 
     it "set freezer level" do
-      expect(freezer).to receive(:set_level).and_return(65)
-
-      expect(refrigerator.set_freezer_level(1)).to eq(65)
+      expect(refrigerator.set_freezer_level(1)).to eq(60)
     end
 
     it "check to_s power off" do
-
-      # Setup for remaining capacity
-      expect(chiller).to receive(:remaining_capacity).and_return(100)
-      expect(freezer).to receive(:remaining_capacity).and_return(100)
-
-      # Set up for total capacity
-      expect(chiller).to receive(:capacity).and_return(100)
-      expect(freezer).to receive(:capacity).and_return(100)
-
       # Set up for current_water_volume
       expect(water_reservoir).to receive(:current_water_volume).and_return(20)
-
-      # Set up for unplug
-      expect(chiller).to receive(:turn_off).and_return(:off)
-      expect(freezer).to receive(:turn_off).and_return(:off)
 
       refrigerator.unplug
 
@@ -118,21 +92,8 @@ describe 'A refrigerator' do
     end
 
     it "check to_s power on" do
-
-      # Setup for remaining capacity
-      expect(chiller).to receive(:remaining_capacity).and_return(100)
-      expect(freezer).to receive(:remaining_capacity).and_return(100)
-
-      # Set up for total capacity
-      expect(chiller).to receive(:capacity).and_return(100)
-      expect(freezer).to receive(:capacity).and_return(100)
-
       # Set up for current_water_volume
       expect(water_reservoir).to receive(:current_water_volume).and_return(20)
-      
-      # Set up for plug in
-      expect(chiller).to receive(:turn_on).and_return(:on)
-      expect(freezer).to receive(:turn_on).and_return(:on)
       
       refrigerator.plug_in
       expect(refrigerator.to_s).to \
