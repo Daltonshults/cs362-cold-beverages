@@ -23,7 +23,16 @@ describe 'A water dispenser' do
     it "dispenses volume the size of the vessel's volume" do
       expect(reservoir).to receive(:drain).and_return(50)
       vessel = double('vessel', name: "Name", volume: 50, level: 0)
+      allow(vessel).to receive(:fill).and_return(vessel.volume)
       expect(water_dispenser.dispense(vessel)).to eq(50)
+    end
+
+    it "dispenses the entire volume of the vessel" do
+      expect(reservoir).to receive(:drain).and_return(0)
+      vessel = double('vessel', name: "Name", volume: 100, level: 0)
+      expect(vessel).to receive(:fill).and_return(vessel.level + reservoir.current_water_volume)
+
+      expect(water_dispenser.dispense(vessel)).to eq(0)
     end
   end
 
